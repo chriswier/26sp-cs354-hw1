@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: manga_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: manga
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+      - manga_data:/var/lib/postgresql/data
+
+volumes:
+  manga_data:

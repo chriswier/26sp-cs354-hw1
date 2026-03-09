@@ -1,0 +1,15 @@
+# Instructor-only files (never committed)
+generate_hashes.py
+hashes.json
+setup.sh
+
+# Assignment prompt
+prompt.txt
+
+# Python environment
+venv/
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
