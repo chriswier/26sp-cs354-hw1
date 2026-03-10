@@ -1,11 +1,14 @@
 name: Autograder
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   grade:
     runs-on: ubuntu-latest
-    image: harbor.cs.calvin.edu/calvincs-public/devcontainer-cs354-autograde:latest
+    container:
+      image: harbor.cs.calvin.edu/calvincs-public/devcontainer-cs354-autograde:latest
 
     steps:
       - name: Checkout repository
