@@ -13,8 +13,10 @@ Usage:
 import hashlib
 import json
 import os
+import subprocess
 import sys
 from decimal import Decimal
+from pathlib import Path
 
 import psycopg2
 
@@ -122,6 +124,57 @@ def run_sql_file(cur, filepath):
     return cur.fetchall()
 
 
+def reset_database_state():
+    """Drop and recreate the configured database, then run sql/*.sql files."""
+    dbname = DB_CONFIG["dbname"]
+    sql_dir = Path(__file__).resolve().parent / "sql"
+    sql_files = sorted(sql_dir.glob("*.sql"))
+
+    if not sql_files:
+        raise FileNotFoundError(f"No SQL files found in {sql_dir}")
+
+    env = os.environ.copy()
+    if DB_CONFIG.get("password"):
+        env["PGPASSWORD"] = DB_CONFIG["password"]
+
+    base_args = [
+        "-h", DB_CONFIG["host"],
+        "-p", str(DB_CONFIG["port"]),
+        "-U", DB_CONFIG["user"],
+    ]
+
+    subprocess.run(
+        ["dropdb", *base_args, "--if-exists", dbname],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    subprocess.run(
+        ["createdb", *base_args, dbname],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    for sql_file in sql_files:
+        subprocess.run(
+            [
+                "psql",
+                *base_args,
+                "-d", dbname,
+                "-v", "ON_ERROR_STOP=1",
+                "-f", str(sql_file),
+            ],
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -129,6 +182,12 @@ def run_sql_file(cur, filepath):
 def main():
     results = {}
     total_score = 0
+
+    try:
+        reset_database_state()
+    except Exception as exc:
+        print(f"ERROR: Could not reset database state: {exc}", file=sys.stderr)
+        sys.exit(1)
 
     try:
         conn = psycopg2.connect(**DB_CONFIG)
