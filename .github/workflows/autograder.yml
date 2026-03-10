@@ -14,24 +14,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Load schema
-      #   run: |
-      #     PGPASSWORD=admin psql -h localhost -U admin -d manga -f sql/01_schema.sql
-
-      # - name: Load seed data
-      #   run: |
-      #     PGPASSWORD=admin psql -h localhost -U admin -d manga -f sql/02_seed.sql
-
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: "3.12"
-
-      # - name: Install dependencies
-      #   run: pip install -r requirements.txt
-
       - name: Run autograder
-        run: python grade.py
+        run: python3 grade.py
 
       # Post a formatted score table to the Actions summary.
       # Only reads results.json — never exposes hashes or answer queries.
