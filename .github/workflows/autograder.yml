@@ -1,27 +1,11 @@
 name: Autograder
 
-on:
-  push:
-  workflow_dispatch:
+on: [push]
 
 jobs:
   grade:
-    runs-on: harbor.cs.calvin.edu/calvincs-public/devcontainer-cs354-autograde:latest
-
-    # services:
-    #   postgres:
-    #     image: postgres:16
-    #     env:
-    #       POSTGRES_USER: admin
-    #       POSTGRES_PASSWORD: admin
-    #       POSTGRES_DB: manga
-    #     ports:
-    #       - 5432:5432
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+    runs-on: ubuntu-latest
+    image: harbor.cs.calvin.edu/calvincs-public/devcontainer-cs354-autograde:latest
 
     steps:
       - name: Checkout repository
